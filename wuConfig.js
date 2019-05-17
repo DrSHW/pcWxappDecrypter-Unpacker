@@ -60,7 +60,7 @@ function doConfig(configFile, cb) {
             }
             app.subPackages = subPackages;
             app.pages = pages;
-            console.log("=======================================================\nNOTICE: SubPackages exist in this package.\nDetails: ", app.subPackages.length, "\n=======================================================");
+            console.log("=======================================================\n这个小程序采用了分包\n子包个数为: ", app.subPackages.length, "\n=======================================================");
         }
         if (e.navigateToMiniProgramAppIdList) app.navigateToMiniProgramAppIdList = e.navigateToMiniProgramAppIdList;
         if (fs.existsSync(path.resolve(dir, "workers.js"))) app.workers = getWorkerPath(path.resolve(dir, "workers.js"));
