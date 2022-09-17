@@ -1,25 +1,53 @@
+# PC小程序解密/逆向工具
 
-# 说明
-- 本项目无法适用于 2018 年前开发的小程序(如最后更新时间为 2017.7.12), 请过早的小程序不用再尝试了
-- 本项目完全基于 [wxappUnpacker](https://github.com/qwerty472123/wxappUnpacker "wxappUnpacker") 改进的。
+### PC小程序解密
 
+微信小程序在PC端是加密存储的，如果直接打开是看不到什么有用的信息的，需要经过解密才可以看到包内具体的内容。
 
-# 分包功能
+若是手机端导入的`.wxapkg`包，无需此处的解密过程，可以直接进行源码逆向。
 
-当检测到 wxapkg 为子包时, 添加-s 参数指定主包源码路径即可自动将子包的 wxss,wxml,js 解析到主包的对应位置下. 完整流程大致如下: 
-1. 获取主包和若干子包
-2. 解包主包 `./bingo.sh testpkg/master-xxx.wxapkg`
-3. 解包子包 `./bingo.sh testpkg/sub-1-xxx.wxapkg -s=../master-xxx`
+在这里使用Python程序`decrypt.py`进行解密，需要Python环境并安装解密模块：
 
-TIP
-> -s 参数可为相对路径或绝对路径, 推荐使用绝对路径, 因为相对路径的起点不是当前目录 而是子包解包后的目录
-
+```bash
+pip install pycryptodome
 ```
-├── testpkg
-│   ├── sub-1-xxx.wxapkg #被解析子包
-│   └── sub-1-xxx               #相对路径的起点
-│       ├── app-service.js
-│   ├── master-xxx.wxapkg
-│   └── master-xxx             # ../master-xxx 就是这个目录
-│       ├── app.json
+
+配置完成后，找到PC小程序的`.wxapkg`文件位置，一般在微信目录下的`Applet`文件夹下，对应`Appid`的文件夹内。
+
+执行：
+
+```bash
+python decrypt.py --wxid [小程序Appid] --file [.wxapkg文件路径] --output [解密后的文件存储路径]
 ```
+
+示例：
+
+```bash
+python decrypt.py --wxid wx1234567890123456 --file D:\Demo\__APP__.wxapkg --output D:\Demo\decrypted.wxapkg
+```
+
+操作后即可得到解密后的文件，文件路径推荐使用绝对路径，`--file`等价于`-f`，`--output`等价于`-o`。
+
+### 小程序逆向
+
+这里借鉴了项目：https://github.com/yswunstoppable/wxappUnpacker 的源码。
+
+先安装依赖：
+
+```bash
+npm install
+```
+
+配置完成后直接导入`.wxapkg`文件，即可在相同目录下生成逆向源码，执行：
+
+```bash
+node wuWxapkg.js [(解密后).wxapkg文件路径]
+```
+
+文件路径推荐使用绝对路径，示例：
+
+```bash
+node wuWxapkg.js D:\Demo\decrypted.wxapkg
+```
+
+即可在对应文件夹中生成对应小程序JS源码。
